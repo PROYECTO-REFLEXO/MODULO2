@@ -1,0 +1,39 @@
+name: Sync Frontend and Backend
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Cada hora
+  workflow_dispatch:      # Permite ejecución manual
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo (Fusion_reflexoperu)
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+        token: ${{ secrets.GH_TOKEN }}
+
+    - name: Sync Frontend desde ReflexoPeru-V2-Front
+      run: |
+        echo "Clonando frontend..."
+        git clone --depth=1 https://github.com/ReflexoPeru/ReflexoPeru-V2-Front.git frontend_temp
+        cp -rf frontend_temp/* .
+        rm -rf frontend_temp
+
+    - name: Actualizar submódulo backend
+      run: |
+        echo "Actualizando backend..."
+        cd backend
+        git pull origin main
+        cd ..
+
+    - name: Commit y Push si hay cambios
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Auto-sync: frontend + backend" || echo "Sin cambios"
+        git push origin main
