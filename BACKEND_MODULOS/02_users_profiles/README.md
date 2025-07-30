@@ -1,65 +1,103 @@
-# Estructura de 02_users_profiles
+# Módulo 02 - Gestión de Usuarios y Perfiles 👥
 
-Esta carpeta ahora está organizada según las **Historias de Usuario (HU)** principales del módulo de gestión de usuarios y perfiles. Cada subcarpeta corresponde a una funcionalidad clave del sistema, facilitando la identificación y el mantenimiento del código relacionado con cada requerimiento.
+Este módulo gestiona todo lo relacionado con usuarios, perfiles, autenticación y verificación. Está organizado en Historias de Usuario (HU):
 
-## Organización por Historias de Usuario (HU)
+## HU01_UserCRUD - Gestión de Usuarios
 
-- **HU01_UserCRUD/**: Gestión completa de usuarios (alta, baja, modificación, consulta). Incluye controladores, modelos, requests, resources y servicios para el CRUD de usuarios.
-- **HU02_ProfileManagement/**: Gestión y edición de perfil de usuario. Incluye controladores, servicios y requests para la edición de datos personales y gestión de imágenes de perfil.
-- **HU03_ChangePassword/**: Cambio y recuperación de contraseña. Incluye controladores, servicios y requests para el cambio y recuperación de contraseñas, así como lógica de primer login.
-- **HU04_EmailVerification/**: Verificación de email de usuario. Incluye controladores, servicios, requests, mails, modelos y vistas para la verificación de correo electrónico y procesos relacionados.
-- **HU05_UserSearchFilters/**: Búsqueda y filtros de usuarios. Incluye requests y servicios para la búsqueda avanzada y filtrado de usuarios.
+Gestiona las operaciones CRUD de usuarios:
 
-## Estructura interna de cada HU
+### Estructura:
+- **Controllers/UserController.php**: Maneja las peticiones HTTP para usuarios
+- **Models/User.php**: Modelo principal de usuario con atributos como:
+  - Información personal (nombre, apellidos)
+  - Datos de contacto (email, teléfono)
+  - Credenciales (usuario, contraseña)
+  - Usa traits: HasFactory, SoftDeletes, Notifiable, HasApiTokens, HasRoles
+- **Requests/**:
+  - `StoreUserRequest.php`: Validaciones para crear usuarios
+  - `UpdateUserRequest.php`: Validaciones para actualizar usuarios
+- **Resources/**:
+  - `UserCollection.php`: Colección de recursos de usuario
+  - `UserResource.php`: Transformación de datos de usuario
+- **Services/UserService.php**: Lógica de negocio para usuarios
 
-Cada HU puede contener las siguientes carpetas según corresponda:
+## HU02_ProfileManagement - Gestión de Perfiles
 
-- **Controllers/**: Controladores que gestionan las solicitudes HTTP.
-- **Models/**: Modelos de datos.
-- **Requests/**: Validaciones de datos de entrada.
-- **Resources/**: Transformadores de respuestas API.
-- **Services/**: Lógica de negocio y operaciones complejas.
-- **Mails/**: Clases para el envío de correos electrónicos (solo HU04).
-- **Views/**: Vistas Blade para correos electrónicos y procesos de verificación (solo HU04).
+Maneja la información de perfiles y fotos de usuario:
 
-## Ejemplo de estructura
+### Estructura:
+- **Controllers/**:
+  - `ImageController.php`: Gestión de imágenes de perfil
+  - `ProfileController.php`: Gestión de perfiles de usuario
+- **Requests/**:
+  - `UpdatePhotoRequest.php`: Validación de actualización de foto
+  - `UpdateProfileRequest.php`: Validación de actualización de perfil
+  - `UploadImageRequest.php`: Validación de carga de imágenes
+- **Services/ProfileService.php**: Lógica de gestión de perfiles
 
-```
-02_users_profiles/
-  ├── HU01_UserCRUD/
-  │   ├── Controllers/
-  │   ├── Models/
-  │   ├── Requests/
-  │   ├── Resources/
-  │   └── Services/
-  ├── HU02_ProfileManagement/
-  │   ├── Controllers/
-  │   ├── Requests/
-  │   └── Services/
-  ├── HU03_ChangePassword/
-  │   ├── Controllers/
-  │   ├── Requests/
-  │   └── Services/
-  ├── HU04_EmailVerification/
-  │   ├── Controllers/
-  │   ├── Requests/
-  │   ├── Services/
-  │   ├── Mails/
-  │   ├── Models/
-  │   └── Views/
-  └── HU05_UserSearchFilters/
-      ├── Requests/
-      └── Services/
-```
+## HU03_ChangePassword - Gestión de Contraseñas
 
-## ¿Qué hace cada archivo?
+Maneja el cambio y restablecimiento de contraseñas:
 
-- **Controllers/**: Gestionan las peticiones y respuestas HTTP.
-- **Models/**: Definen la estructura y relaciones de los datos.
-- **Requests/**: Validan los datos recibidos en las solicitudes.
-- **Resources/**: Transforman los modelos en respuestas API.
-- **Services/**: Implementan la lógica de negocio y operaciones complejas.
-- **Mails/**: Definen el contenido y destinatarios de los correos de verificación.
-- **Views/**: Plantillas visuales para los correos electrónicos enviados a los usuarios.
+### Estructura:
+- **Controllers/ChangePasswordController.php**: Control de cambios de contraseña
+- **Requests/**:
+  - `ChangePasswordRequest.php`: Validación de cambio de contraseña
+  - `ResetPasswordRequest.php`: Validación de restablecimiento
+- **Services/**:
+  - `ChangePasswordService.php`: Lógica de cambio de contraseña
+  - `FirstLoginService.php`: Gestión del primer inicio de sesión
+  - `ResetPasswordServices.php`: Servicios de restablecimiento
 
-Esta organización por historias de usuario facilita el mantenimiento, la escalabilidad y la comprensión del código, permitiendo que cada funcionalidad evolucione de forma independiente y ordenada. 
+## HU04_EmailVerification - Verificación de Email
+
+Gestiona la verificación de correos electrónicos:
+
+### Estructura:
+- **Controllers/VerificationController.php**: Control de verificación
+- **Mails/VerificationEmail.php**: Plantilla de correo de verificación
+- **Models/UserVerificationCode.php**: Modelo para códigos de verificación
+- **Requests/**:
+  - `EmailRequest.php`: Validación de correo
+  - `VerificationRequest.php`: Validación de verificación
+- **Services/VerificationServices.php**: Lógica de verificación
+- **Views/**:
+  - `password-restore.blade.php`: Vista de restauración
+  - `verification.blade.php`: Vista de verificación
+
+## HU05_UserSearchFilters - Filtros de Búsqueda
+
+Implementa la búsqueda avanzada de usuarios:
+
+### Estructura:
+- **Requests/SearchUsersRequest.php**: Validaciones para búsqueda de usuarios
+
+## Funcionalidades Principales
+
+1. **Gestión de Usuarios**:
+   - CRUD completo de usuarios
+   - Gestión de roles y permisos
+   - Soft delete para usuarios
+
+2. **Gestión de Perfiles**:
+   - Actualización de información de perfil
+   - Gestión de fotos de perfil
+   - Validaciones de datos
+
+3. **Seguridad**:
+   - Cambio de contraseña
+   - Restablecimiento de contraseña
+   - Verificación de email
+   - Gestión de primer inicio de sesión
+
+4. **Búsqueda y Filtros**:
+   - Búsqueda avanzada de usuarios
+   - Filtros personalizados
+
+## Dependencias
+
+- Laravel Sanctum para autenticación
+- Spatie Permission para roles y permisos
+- Laravel Mail para envío de correos
+- Laravel Storage para gestión de archivos
+        
