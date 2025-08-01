@@ -1,5 +1,4 @@
-iamge controller
-# views.py
+from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -9,24 +8,29 @@ from django.http import FileResponse, Http404
 from django.conf import settings
 from django.utils.crypto import get_random_string
 import os
-from .models import User
-from .serializers import UploadImageSerializer
+
+from your_app.serializers.update_photo_serializer import UpdatePhotoSerializer
+
+User = get_user_model()
 
 class UploadUserPhotoView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request, user_id):
-        serializer = UploadImageSerializer(data=request.data)
+        serializer = UpdatePhotoSerializer(data=request.data)
         if serializer.is_valid():
             try:
                 user = User.objects.get(pk=user_id)
 
-                if user.photo_url:
-                    old_path = os.path.join(settings.MEDIA_ROOT, user.photo_url)
-                    if os.path.exists(old_path):
-                        os.remove(old_path)
+                # Eliminar foto antigua si existe
+                old_path = user.photo_url
+                if old_path:
+                    full_old = os.path.join(settings.MEDIA_ROOT, old_path)
+                    if os.path.exists(full_old):
+                        os.remove(full_old)
 
-                file = serializer.validated_data['photo']
+                # Guardar nueva foto
+                file = serializer.validated_data.get('photo')
                 file_ext = file.name.split('.')[-1]
                 random_name = get_random_string(length=15)
                 file_name = f"{random_name}.{file_ext}"
@@ -51,14 +55,18 @@ class ShowUserPhotoView(APIView):
     def get(self, request, user_id):
         try:
             user = User.objects.get(pk=user_id)
-            if not user.photo_url:
+            path = user.photo_url
+n            if not path:
                 raise Http404('Imagen no encontrada')
 
-            path = os.path.join(settings.MEDIA_ROOT, user.photo_url)
-            if not os.path.exists(path):
+            full_path = os.path.join(settings.MEDIA_ROOT, path)
+            if not os.path.exists(full_path):
                 raise Http404('Imagen no encontrada')
 
-            return FileResponse(open(path, 'rb'), content_type='image/jpeg')
+            # Content type dinámico según extensión
+            ext = path.split('.')[-1].lower()
+            content_type = f'image/{ext if ext != "jpg" else "jpeg"}'
+            return FileResponse(open(full_path, 'rb'), content_type=content_type)
         except User.DoesNotExist:
             raise Http404('Usuario no encontrado')
 
@@ -68,10 +76,11 @@ class DeleteUserPhotoView(APIView):
     def delete(self, request, user_id):
         try:
             user = User.objects.get(pk=user_id)
-            if user.photo_url:
-                path = os.path.join(settings.MEDIA_ROOT, user.photo_url)
-                if os.path.exists(path):
-                    os.remove(path)
+            path = user.photo_url
+            if path:
+                full_path = os.path.join(settings.MEDIA_ROOT, path)
+                if os.path.exists(full_path):
+                    os.remove(full_path)
                 user.photo_url = None
                 user.save()
                 return Response({'message': 'Foto eliminada correctamente'}, status=status.HTTP_200_OK)
