@@ -2,12 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
-from your_app.serializers.verification_serializer import VerificationSerializer
-from your_app.services.verification_service import VerificationService
+
+from Serializers.verification_serializer import VerificationSerializer
+from Services.verification_service import VerificationService
 
 User = get_user_model()
 
-class VerificationView(APIView):
+class  VerifyEmailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -42,3 +43,18 @@ class VerificationView(APIView):
         Método create (parcial) - no implementado.
         """
         return Response({'message': 'Método no implementado.'}, status=501)
+    
+    
+class SendVerifyCodeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """
+        Envía un código de verificación al correo del usuario.
+        """
+        user = request.user
+        if not user:
+            return Response({'message': 'No se pudo determinar el usuario.'}, status=400)
+
+        result, status_code = VerificationService.send_code(user)
+        return Response(result, status=status_code)
