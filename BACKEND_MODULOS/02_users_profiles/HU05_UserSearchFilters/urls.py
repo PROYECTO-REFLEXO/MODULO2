@@ -1,6 +1,6 @@
 from django.urls import path
-from HU02_users_profiles.HU05_UserSearchFilters.views.search_controller import search_users_view
-from HU02_users_profiles.HU05_UserSearchFilters.views.search_html_view import search_users_html_view
+from HU05_UserSearchFilters.views.search_controller import search_users_view
+from HU05_UserSearchFilters.views.search_html_view import search_users_html_view
 
 urlpatterns = [
     # Vista API que devuelve resultados en JSON

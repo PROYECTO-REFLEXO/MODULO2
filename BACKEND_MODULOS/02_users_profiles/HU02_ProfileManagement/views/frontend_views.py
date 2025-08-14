@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from HU02_users_profiles.HU02_ProfileManagement.users.models import CustomUser
+from HU02_ProfileManagement.users.models import CustomUser
 
 @login_required
 def hu02_view(request):

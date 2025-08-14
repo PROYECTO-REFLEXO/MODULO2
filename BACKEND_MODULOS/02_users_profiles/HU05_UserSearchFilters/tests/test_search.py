@@ -1,6 +1,6 @@
 import pytest
 from django.test import TestCase
-from HU02_users_profiles.HU05_UserSearchFilters.requests.search_users_form import SearchUsersForm
+from HU05_UserSearchFilters.requests.search_users_form import SearchUsersForm
 
 class SearchUsersFormTest(TestCase):
 

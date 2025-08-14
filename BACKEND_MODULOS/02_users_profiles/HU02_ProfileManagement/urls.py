@@ -1,15 +1,15 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from HU02_users_profiles.HU02_ProfileManagement.forms import EmailAuthenticationForm  # ← agregado
+from HU02_ProfileManagement.forms import EmailAuthenticationForm  # ← agregado
 
 from .controllers import frontend_views
-from HU02_users_profiles.HU02_ProfileManagement.controllers.profile_controller import ProfileView
-from HU02_users_profiles.HU02_ProfileManagement.controllers.image_controller import (
+from HU02_ProfileManagement.controllers.profile_controller import ProfileView
+from HU02_ProfileManagement.controllers.image_controller import (
     UploadUserPhotoView,
     ShowUserPhotoView,
     DeleteUserPhotoView
 )
-from HU02_users_profiles.HU02_ProfileManagement.controllers.compatibility_controller import CompatibilityController
+from HU02_ProfileManagement.controllers.compatibility_controller import CompatibilityController
 
 urlpatterns = [
     path('me/', ProfileView.as_view(), name='user_profile'),

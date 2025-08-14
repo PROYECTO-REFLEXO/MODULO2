@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 import os
 
-from HU02_users_profiles.HU02_ProfileManagement.serializers import UploadImageSerializer
+from HU02_ProfileManagement.serializers import UploadImageSerializer
 
 User = get_user_model()
 

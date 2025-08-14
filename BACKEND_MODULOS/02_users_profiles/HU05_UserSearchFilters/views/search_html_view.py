@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
-from HU02_users_profiles.HU05_UserSearchFilters.requests.search_users_form import SearchUsersForm
+from HU05_UserSearchFilters.requests.search_users_form import SearchUsersForm
 
 User = get_user_model()
 
