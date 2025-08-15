@@ -1,103 +1,205 @@
-# Módulo 02 - Gestión de Usuarios y Perfiles 👥
+Módulo 02 - Gestión de Usuarios y Perfiles 👥
 
-Este módulo gestiona todo lo relacionado con usuarios, perfiles, autenticación y verificación. Está organizado en Historias de Usuario (HU):
+Este módulo centraliza todo lo relacionado con usuarios, perfiles, autenticación, verificación y búsqueda, desarrollado en Django con Django REST Framework.
 
-## HU01_UserCRUD - Gestión de Usuarios
+HU01 – Gestión de Usuarios (UserCRUD)
 
-Gestiona las operaciones CRUD de usuarios:
+Descripción:
+Permite realizar operaciones CRUD sobre usuarios, con validaciones y manejo de errores.
 
-### Estructura:
-- **Controllers/UserController.php**: Maneja las peticiones HTTP para usuarios
-- **Models/User.php**: Modelo principal de usuario con atributos como:
-  - Información personal (nombre, apellidos)
-  - Datos de contacto (email, teléfono)
-  - Credenciales (usuario, contraseña)
-  - Usa traits: HasFactory, SoftDeletes, Notifiable, HasApiTokens, HasRoles
-- **Requests/**:
-  - `StoreUserRequest.php`: Validaciones para crear usuarios
-  - `UpdateUserRequest.php`: Validaciones para actualizar usuarios
-- **Resources/**:
-  - `UserCollection.php`: Colección de recursos de usuario
-  - `UserResource.php`: Transformación de datos de usuario
-- **Services/UserService.php**: Lógica de negocio para usuarios
+Estructura de Archivos:
 
-## HU02_ProfileManagement - Gestión de Perfiles
+views_simple.py → Vistas simplificadas
 
-Maneja la información de perfiles y fotos de usuario:
+urls_simple.py → Rutas para el CRUD
 
-### Estructura:
-- **Controllers/**:
-  - `ImageController.php`: Gestión de imágenes de perfil
-  - `ProfileController.php`: Gestión de perfiles de usuario
-- **Requests/**:
-  - `UpdatePhotoRequest.php`: Validación de actualización de foto
-  - `UpdateProfileRequest.php`: Validación de actualización de perfil
-  - `UploadImageRequest.php`: Validación de carga de imágenes
-- **Services/ProfileService.php**: Lógica de gestión de perfiles
+backend/HU01_UserCRUD/models/user.py → Modelo principal de usuario
 
-## HU03_ChangePassword - Gestión de Contraseñas
+backend/HU01_UserCRUD/views/UserController.py → Lógica de control
 
-Maneja el cambio y restablecimiento de contraseñas:
+Endpoints:
 
-### Estructura:
-- **Controllers/ChangePasswordController.php**: Control de cambios de contraseña
-- **Requests/**:
-  - `ChangePasswordRequest.php`: Validación de cambio de contraseña
-  - `ResetPasswordRequest.php`: Validación de restablecimiento
-- **Services/**:
-  - `ChangePasswordService.php`: Lógica de cambio de contraseña
-  - `FirstLoginService.php`: Gestión del primer inicio de sesión
-  - `ResetPasswordServices.php`: Servicios de restablecimiento
+GET /api/crud/ping/ → Estado del módulo
 
-## HU04_EmailVerification - Verificación de Email
+GET /api/crud/test/ → Página de prueba
 
-Gestiona la verificación de correos electrónicos:
+GET /api/crud/users/ → Listar usuarios
 
-### Estructura:
-- **Controllers/VerificationController.php**: Control de verificación
-- **Mails/VerificationEmail.php**: Plantilla de correo de verificación
-- **Models/UserVerificationCode.php**: Modelo para códigos de verificación
-- **Requests/**:
-  - `EmailRequest.php`: Validación de correo
-  - `VerificationRequest.php`: Validación de verificación
-- **Services/VerificationServices.php**: Lógica de verificación
-- **Views/**:
-  - `password-restore.blade.php`: Vista de restauración
-  - `verification.blade.php`: Vista de verificación
+POST /api/crud/users/ → Crear usuario
 
-## HU05_UserSearchFilters - Filtros de Búsqueda
+PUT /api/crud/users/<id>/ → Actualizar usuario
 
-Implementa la búsqueda avanzada de usuarios:
+DELETE /api/crud/users/<id>/ → Eliminar usuario
 
-### Estructura:
-- **Requests/SearchUsersRequest.php**: Validaciones para búsqueda de usuarios
+Criterios de Aceptación:
 
-## Funcionalidades Principales
+ Un usuario se crea correctamente cuando recibe un 201 Created y contiene todos los campos obligatorios.
 
-1. **Gestión de Usuarios**:
-   - CRUD completo de usuarios
-   - Gestión de roles y permisos
-   - Soft delete para usuarios
+ La actualización devuelve 200 OK y refleja los cambios realizados.
 
-2. **Gestión de Perfiles**:
-   - Actualización de información de perfil
-   - Gestión de fotos de perfil
-   - Validaciones de datos
+ La eliminación devuelve 204 No Content.
 
-3. **Seguridad**:
-   - Cambio de contraseña
-   - Restablecimiento de contraseña
-   - Verificación de email
-   - Gestión de primer inicio de sesión
+ Listar usuarios devuelve un arreglo en formato JSON con al menos un usuario cuando existan registros.
 
-4. **Búsqueda y Filtros**:
-   - Búsqueda avanzada de usuarios
-   - Filtros personalizados
+HU02 – Gestión de Perfiles (ProfileManagement)
 
-## Dependencias
+Descripción:
+Administra datos personales, foto de perfil y estado de verificación de cada usuario.
 
-- Laravel Sanctum para autenticación
-- Spatie Permission para roles y permisos
-- Laravel Mail para envío de correos
-- Laravel Storage para gestión de archivos
-        
+Estructura:
+
+controllers/profile_controller.py → Control de perfiles
+
+controllers/compatibility_controller.py → Lógica de compatibilidad
+
+users/models.py → Modelo de usuario extendido
+
+services/profile_service.py → Lógica de negocio
+
+forms.py → Formularios
+
+serializers.py → Serializadores DRF
+
+Campos:
+first_name, last_name, materno, email, phone, genero, is_verified, photo
+
+Endpoints:
+
+GET /api/profile/ping/ → Estado del módulo
+
+GET /api/profile/me/ → Perfil actual
+
+PUT /api/profile/me/ → Actualizar perfil
+
+POST /api/profile/upload-photo/ → Subir foto
+
+Criterios de Aceptación:
+
+ Un usuario autenticado puede obtener su perfil con 200 OK.
+
+ Actualizar datos retorna 200 OK y los campos modificados.
+
+ Subir foto devuelve 201 Created y la nueva URL de imagen.
+
+ Campos como email y phone validan formato correctamente.
+
+HU03 – Cambio de Contraseña (ChangePassword)
+
+Descripción:
+Permite cambiar la contraseña y validar la actual antes del cambio.
+
+Estructura:
+
+views_simple.py
+
+urls_simple.py
+
+backend/HU03_ChangePassword/views/ChangePasswordController.py
+
+Endpoints:
+
+GET /api/password/ping/ → Estado
+
+GET /api/password/test/ → Página de prueba
+
+POST /api/password/change-password/ → Cambiar contraseña
+
+POST /api/password/validate-password/ → Validar contraseña actual
+
+Criterios de Aceptación:
+
+ El cambio de contraseña requiere la contraseña actual válida.
+
+ Contraseña nueva cumple reglas (mínimo 8 caracteres, combinación de letras y números).
+
+ El endpoint retorna 200 OK con mensaje de confirmación.
+
+HU04 – Verificación de Email (EmailVerification)
+
+Descripción:
+Envía códigos de verificación y valida correos electrónicos de usuarios.
+
+Estructura:
+
+Models/UserVerificationCode.py
+
+Services/email_service.py
+
+Services/verification_service.py
+
+Controllers/VerificationController.py
+
+views.py
+
+urls_simple.py
+
+Endpoints:
+
+GET /api/auth/ping/ → Estado
+
+POST /api/auth/send-verify-email/ → Enviar código
+
+POST /api/auth/verify-email/ → Verificar código
+
+Criterios de Aceptación:
+
+ El envío de código devuelve 200 OK e indica que el correo fue enviado.
+
+ El código tiene una validez configurada (ej. 10 minutos).
+
+ La verificación correcta actualiza is_verified = true.
+
+ Códigos inválidos o expirados devuelven 400 Bad Request.
+
+HU05 – Filtros de Búsqueda (UserSearchFilters)
+
+Descripción:
+Implementa búsqueda avanzada y filtrado de usuarios con paginación.
+
+Estructura:
+
+models/profile.py
+
+views/search_controller.py
+
+views/search_html_view.py
+
+requests/search_users_form.py
+
+Endpoints:
+
+GET /api/users/ → Búsqueda con parámetros (search, per_page, filtros adicionales)
+
+Criterios de Aceptación:
+
+ Las búsquedas sin parámetros devuelven un error o lista vacía según configuración.
+
+ La respuesta está paginada y contiene count, next, previous, results.
+
+ Los filtros funcionan correctamente combinados (por ejemplo, género + nombre).
+
+ La búsqueda por texto parcial devuelve coincidencias esperadas.
+
+Interfaz de Usuario
+
+📄 templates/hu02.html → Página central con:
+
+Perfil editable con avatar
+
+Modales para cambio de email (HU04) y contraseña (HU03)
+
+Integración total con las APIs
+
+Diseño responsive
+
+Funcionalidades Clave
+
+Usuarios → CRUD con validaciones.
+
+Perfiles → Foto, datos, verificación.
+
+Seguridad → Cambio y validación de contraseñas.
+
+Verificación → Códigos y actualización de estado.
+
+Búsqueda → Filtros y paginación.
