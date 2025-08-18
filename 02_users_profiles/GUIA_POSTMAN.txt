@@ -1,0 +1,755 @@
+===============================================================================
+                    GUÍA COMPLETA DE TESTING EN POSTMAN - 02_USERS_PROFILES
+===============================================================================
+
+Esta guía detalla cómo probar todas las funcionalidades de la API de gestión de
+usuarios y perfiles usando Postman, incluyendo autenticación, endpoints y ejemplos
+de requests/responses.
+
+===============================================================================
+                                ÍNDICE
+===============================================================================
+
+1. CONFIGURACIÓN INICIAL
+2. ESTRUCTURA DE LA API
+3. ENDPOINTS DISPONIBLES
+4. AUTENTICACIÓN
+5. COLECCIÓN DE POSTMAN
+6. EJEMPLOS DE REQUESTS
+7. CASOS DE PRUEBA
+8. SOLUCIÓN DE PROBLEMAS
+9. MEJORES PRÁCTICAS
+
+===============================================================================
+                            1. CONFIGURACIÓN INICIAL
+===============================================================================
+
+PREREQUISITOS:
+- Postman instalado
+- Servidor Django ejecutándose
+- Base de datos configurada
+- Usuario administrador creado
+
+CONFIGURACIÓN DEL SERVIDOR:
+
+1. Iniciar el servidor Django:
+   ```bash
+   python manage.py runserver
+   ```
+
+2. URL base de la API:
+   ```
+   http://localhost:8000/api/users_profiles/
+   ```
+
+3. Verificar que el servidor esté funcionando:
+   ```
+   GET http://localhost:8000/api/users_profiles/
+   ```
+
+===============================================================================
+                           2. ESTRUCTURA DE LA API
+===============================================================================
+
+La API está organizada en los siguientes módulos:
+
+A) GESTIÓN DE USUARIOS (User CRUD)
+   - Crear, leer, actualizar, eliminar usuarios
+   - Gestión de fotos de perfil
+   - Búsqueda de usuarios
+
+B) GESTIÓN DE PERFILES (Profile Management)
+   - Crear y actualizar perfiles
+   - Configuraciones de privacidad
+   - Perfiles públicos/privados
+
+C) GESTIÓN DE CONTRASEÑAS (Password Management)
+   - Cambio de contraseña
+   - Recuperación de contraseña
+   - Reset de contraseña
+
+D) VERIFICACIÓN DE EMAIL (Email Verification)
+   - Verificación de email
+   - Cambio de email
+   - Reenvío de códigos
+
+===============================================================================
+                           3. ENDPOINTS DISPONIBLES
+===============================================================================
+
+A) ENDPOINTS DE USUARIO:
+   - GET    /api/users_profiles/users/                    # Listar usuarios
+   - POST   /api/users_profiles/users/                    # Crear usuario
+   - GET    /api/users_profiles/users/{id}/               # Obtener usuario
+   - PUT    /api/users_profiles/users/{id}/               # Actualizar usuario
+   - DELETE /api/users_profiles/users/{id}/               # Eliminar usuario
+   - GET    /api/users_profiles/users/search/             # Buscar usuarios
+   - POST   /api/users_profiles/users/{id}/photo/         # Subir foto
+   - DELETE /api/users_profiles/users/{id}/photo/         # Eliminar foto
+
+B) ENDPOINTS DE PERFIL:
+   - GET    /api/users_profiles/profiles/                 # Listar perfiles
+   - POST   /api/users_profiles/profiles/                 # Crear perfil
+   - GET    /api/users_profiles/profiles/{id}/            # Obtener perfil
+   - PUT    /api/users_profiles/profiles/{id}/            # Actualizar perfil
+   - GET    /api/users_profiles/profiles/public/          # Perfiles públicos
+   - GET    /api/users_profiles/profiles/{username}/      # Perfil por username
+
+C) ENDPOINTS DE CONTRASEÑA:
+   - POST   /api/users_profiles/password/change/          # Cambiar contraseña
+   - POST   /api/users_profiles/password/reset/           # Solicitar reset
+   - POST   /api/users_profiles/password/reset/confirm/   # Confirmar reset
+
+D) ENDPOINTS DE VERIFICACIÓN:
+   - POST   /api/users_profiles/verification/send/        # Enviar código
+   - POST   /api/users_profiles/verification/verify/      # Verificar código
+   - POST   /api/users_profiles/verification/resend/      # Reenviar código
+   - POST   /api/users_profiles/email/change/             # Solicitar cambio email
+   - POST   /api/users_profiles/email/change/confirm/     # Confirmar cambio email
+
+===============================================================================
+                               4. AUTENTICACIÓN
+===============================================================================
+
+La API usa autenticación basada en tokens JWT. Para obtener un token:
+
+1. CREAR USUARIO (si no existe):
+   ```
+   POST http://localhost:8000/api/users_profiles/users/
+   Content-Type: application/json
+   
+   {
+     "username": "testuser",
+     "email": "test@example.com",
+     "password": "testpass123",
+     "first_name": "Test",
+     "last_name": "User"
+   }
+   ```
+
+2. OBTENER TOKEN (login):
+   ```
+   POST http://localhost:8000/api/token/
+   Content-Type: application/json
+   
+   {
+     "username": "testuser",
+     "password": "testpass123"
+   }
+   ```
+
+3. USAR TOKEN EN REQUESTS:
+   ```
+   Authorization: Bearer <token>
+   ```
+
+===============================================================================
+                           5. COLECCIÓN DE POSTMAN
+===============================================================================
+
+Crear una nueva colección en Postman llamada "02_Users_Profiles_API" con las
+siguientes carpetas:
+
+A) AUTHENTICATION
+   - Login
+   - Register
+   - Refresh Token
+
+B) USERS
+   - Create User
+   - Get User
+   - Update User
+   - Delete User
+   - Search Users
+   - Upload Photo
+   - Delete Photo
+
+C) PROFILES
+   - Create Profile
+   - Get Profile
+   - Update Profile
+   - Get Public Profiles
+   - Get Profile by Username
+
+D) PASSWORDS
+   - Change Password
+   - Request Reset
+   - Confirm Reset
+
+E) VERIFICATION
+   - Send Verification
+   - Verify Code
+   - Resend Code
+   - Change Email
+   - Confirm Email Change
+
+===============================================================================
+                           6. EJEMPLOS DE REQUESTS
+===============================================================================
+
+A) CREAR USUARIO:
+   ```
+   Method: POST
+   URL: http://localhost:8000/api/users_profiles/users/
+   Headers:
+     Content-Type: application/json
+   Body (raw JSON):
+   {
+     "username": "johndoe",
+     "email": "john@example.com",
+     "password": "securepass123",
+     "first_name": "John",
+     "last_name": "Doe",
+     "phone_number": "+1234567890"
+   }
+   ```
+
+B) OBTENER USUARIO:
+   ```
+   Method: GET
+   URL: http://localhost:8000/api/users_profiles/users/1/
+   Headers:
+     Authorization: Bearer <token>
+   ```
+
+C) ACTUALIZAR USUARIO:
+   ```
+   Method: PUT
+   URL: http://localhost:8000/api/users_profiles/users/1/
+   Headers:
+     Content-Type: application/json
+     Authorization: Bearer <token>
+   Body (raw JSON):
+   {
+     "first_name": "John Updated",
+     "last_name": "Doe Updated",
+     "phone_number": "+1234567891"
+   }
+   ```
+
+D) BUSCAR USUARIOS:
+   ```
+   Method: GET
+   URL: http://localhost:8000/api/users_profiles/users/search/?q=john
+   Headers:
+     Authorization: Bearer <token>
+   ```
+
+E) SUBIR FOTO DE PERFIL:
+   ```
+   Method: POST
+   URL: http://localhost:8000/api/users_profiles/users/1/photo/
+   Headers:
+     Authorization: Bearer <token>
+   Body (form-data):
+     profile_photo: [archivo de imagen]
+   ```
+
+F) CREAR PERFIL:
+   ```
+   Method: POST
+   URL: http://localhost:8000/api/users_profiles/profiles/
+   Headers:
+     Content-Type: application/json
+     Authorization: Bearer <token>
+   Body (raw JSON):
+   {
+     "first_name": "John",
+     "paternal_lastname": "Doe",
+     "maternal_lastname": "Smith",
+     "gender": "M",
+     "bio": "Desarrollador de software",
+     "website": "https://johndoe.com",
+     "is_public": true,
+     "show_email": false,
+     "show_phone": true,
+     "receive_notifications": true
+   }
+   ```
+
+G) CAMBIAR CONTRASEÑA:
+   ```
+   Method: POST
+   URL: http://localhost:8000/api/users_profiles/password/change/
+   Headers:
+     Content-Type: application/json
+     Authorization: Bearer <token>
+   Body (raw JSON):
+   {
+     "current_password": "oldpass123",
+     "new_password": "newpass123",
+     "confirm_password": "newpass123"
+   }
+   ```
+
+H) SOLICITAR RESET DE CONTRASEÑA:
+   ```
+   Method: POST
+   URL: http://localhost:8000/api/users_profiles/password/reset/
+   Headers:
+     Content-Type: application/json
+   Body (raw JSON):
+   {
+     "email": "john@example.com"
+   }
+   ```
+
+I) ENVIAR CÓDIGO DE VERIFICACIÓN:
+   ```
+   Method: POST
+   URL: http://localhost:8000/api/users_profiles/verification/send/
+   Headers:
+     Content-Type: application/json
+     Authorization: Bearer <token>
+   Body (raw JSON):
+   {
+     "verification_type": "email_verification"
+   }
+   ```
+
+J) VERIFICAR CÓDIGO:
+   ```
+   Method: POST
+   URL: http://localhost:8000/api/users_profiles/verification/verify/
+   Headers:
+     Content-Type: application/json
+     Authorization: Bearer <token>
+   Body (raw JSON):
+   {
+     "code": "123456",
+     "verification_type": "email_verification"
+   }
+   ```
+
+===============================================================================
+                             7. CASOS DE PRUEBA
+===============================================================================
+
+A) FLUJO COMPLETO DE REGISTRO:
+
+1. Crear usuario:
+   ```
+   POST /api/users_profiles/users/
+   {
+     "username": "newuser",
+     "email": "newuser@example.com",
+     "password": "pass123",
+     "first_name": "New",
+     "last_name": "User"
+   }
+   ```
+
+2. Login para obtener token:
+   ```
+   POST /api/token/
+   {
+     "username": "newuser",
+     "password": "pass123"
+   }
+   ```
+
+3. Crear perfil:
+   ```
+   POST /api/users_profiles/profiles/
+   Authorization: Bearer <token>
+   {
+     "first_name": "New",
+     "paternal_lastname": "User",
+     "gender": "M",
+     "bio": "Nuevo usuario"
+   }
+   ```
+
+4. Enviar verificación de email:
+   ```
+   POST /api/users_profiles/verification/send/
+   Authorization: Bearer <token>
+   {
+     "verification_type": "email_verification"
+   }
+   ```
+
+5. Verificar email (usar código recibido):
+   ```
+   POST /api/users_profiles/verification/verify/
+   Authorization: Bearer <token>
+   {
+     "code": "123456",
+     "verification_type": "email_verification"
+   }
+   ```
+
+B) FLUJO DE GESTIÓN DE PERFIL:
+
+1. Obtener perfil actual:
+   ```
+   GET /api/users_profiles/profiles/me/
+   Authorization: Bearer <token>
+   ```
+
+2. Actualizar perfil:
+   ```
+   PUT /api/users_profiles/profiles/1/
+   Authorization: Bearer <token>
+   {
+     "bio": "Perfil actualizado",
+     "website": "https://mywebsite.com"
+   }
+   ```
+
+3. Subir foto de perfil:
+   ```
+   POST /api/users_profiles/users/1/photo/
+   Authorization: Bearer <token>
+   Body: form-data con archivo de imagen
+   ```
+
+4. Cambiar configuración de privacidad:
+   ```
+   PUT /api/users_profiles/profiles/1/
+   Authorization: Bearer <token>
+   {
+     "is_public": false,
+     "show_email": false,
+     "show_phone": false
+   }
+   ```
+
+C) FLUJO DE RECUPERACIÓN DE CONTRASEÑA:
+
+1. Solicitar reset:
+   ```
+   POST /api/users_profiles/password/reset/
+   {
+     "email": "user@example.com"
+   }
+   ```
+
+2. Confirmar reset (usar código recibido):
+   ```
+   POST /api/users_profiles/password/reset/confirm/
+   {
+     "code": "123456",
+     "new_password": "newpass123",
+     "confirm_password": "newpass123"
+   }
+   ```
+
+3. Login con nueva contraseña:
+   ```
+   POST /api/token/
+   {
+     "username": "username",
+     "password": "newpass123"
+   }
+   ```
+
+===============================================================================
+                             8. SOLUCIÓN DE PROBLEMAS
+===============================================================================
+
+PROBLEMAS COMUNES Y SOLUCIONES:
+
+1. ERROR 401 (Unauthorized):
+   - Verificar que el token sea válido
+   - Verificar que el token no haya expirado
+   - Verificar formato: "Bearer <token>"
+
+2. ERROR 400 (Bad Request):
+   - Verificar formato JSON del body
+   - Verificar campos requeridos
+   - Verificar validaciones de datos
+
+3. ERROR 404 (Not Found):
+   - Verificar URL del endpoint
+   - Verificar que el recurso existe
+   - Verificar permisos de acceso
+
+4. ERROR 500 (Internal Server Error):
+   - Verificar logs del servidor Django
+   - Verificar configuración de base de datos
+   - Verificar configuración de email
+
+5. ERROR DE CORS:
+   - Verificar configuración CORS en Django
+   - Verificar headers de la request
+   - Verificar origen de la request
+
+COMANDOS DE DIAGNÓSTICO:
+
+```bash
+# Verificar que el servidor esté corriendo
+curl http://localhost:8000/api/users_profiles/
+
+# Verificar logs del servidor
+python manage.py runserver --verbosity=2
+
+# Verificar configuración de base de datos
+python manage.py check
+
+# Verificar migraciones
+python manage.py showmigrations
+```
+
+===============================================================================
+                             9. MEJORES PRÁCTICAS
+===============================================================================
+
+A) ORGANIZACIÓN DE LA COLECCIÓN:
+
+1. Usar carpetas para organizar endpoints
+2. Usar variables de entorno para URLs
+3. Usar pre-request scripts para autenticación
+4. Usar tests scripts para validaciones
+5. Documentar cada request
+
+B) VARIABLES DE ENTORNO:
+
+Crear variables en Postman:
+- base_url: http://localhost:8000
+- api_url: {{base_url}}/api/users_profiles
+- token: (se actualiza automáticamente)
+
+C) PRE-REQUEST SCRIPTS:
+
+Para autenticación automática:
+```javascript
+// Obtener token automáticamente
+pm.sendRequest({
+    url: pm.environment.get("base_url") + "/api/token/",
+    method: 'POST',
+    header: {
+        'Content-Type': 'application/json'
+    },
+    body: {
+        mode: 'raw',
+        raw: JSON.stringify({
+            username: pm.environment.get("username"),
+            password: pm.environment.get("password")
+        })
+    }
+}, function (err, response) {
+    if (response.code === 200) {
+        const token = response.json().access;
+        pm.environment.set("token", token);
+    }
+});
+```
+
+D) TEST SCRIPTS:
+
+Para validaciones automáticas:
+```javascript
+// Verificar status code
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+// Verificar estructura de respuesta
+pm.test("Response has required fields", function () {
+    const response = pm.response.json();
+    pm.expect(response).to.have.property('id');
+    pm.expect(response).to.have.property('username');
+    pm.expect(response).to.have.property('email');
+});
+
+// Verificar tiempo de respuesta
+pm.test("Response time is less than 1000ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(1000);
+});
+```
+
+E) DOCUMENTACIÓN:
+
+Para cada endpoint documentar:
+- Descripción de la funcionalidad
+- Parámetros requeridos
+- Parámetros opcionales
+- Ejemplos de request/response
+- Códigos de error posibles
+- Casos de uso
+
+===============================================================================
+                             10. EJEMPLOS COMPLETOS
+===============================================================================
+
+A) COLECCIÓN COMPLETA EN JSON:
+
+```json
+{
+  "info": {
+    "name": "02_Users_Profiles_API",
+    "description": "API para gestión de usuarios y perfiles"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "api_url",
+      "value": "{{base_url}}/api/users_profiles"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"testpass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/token/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "token", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"pass123\",\n  \"first_name\": \"New\",\n  \"last_name\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/users/",
+              "host": ["{{api_url}}"],
+              "path": ["users", ""]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+B) SCRIPT DE AUTOMATIZACIÓN:
+
+```javascript
+// Ejecutar flujo completo de pruebas
+const testFlow = async () => {
+    // 1. Crear usuario
+    const createUserResponse = await pm.sendRequest({
+        url: pm.environment.get("api_url") + "/users/",
+        method: 'POST',
+        header: {
+            'Content-Type': 'application/json'
+        },
+        body: {
+            mode: 'raw',
+            raw: JSON.stringify({
+                username: "testuser" + Date.now(),
+                email: "test" + Date.now() + "@example.com",
+                password: "testpass123",
+                first_name: "Test",
+                last_name: "User"
+            })
+        }
+    });
+    
+    if (createUserResponse.code === 201) {
+        const user = createUserResponse.json();
+        
+        // 2. Login
+        const loginResponse = await pm.sendRequest({
+            url: pm.environment.get("base_url") + "/api/token/",
+            method: 'POST',
+            header: {
+                'Content-Type': 'application/json'
+            },
+            body: {
+                mode: 'raw',
+                raw: JSON.stringify({
+                    username: user.username,
+                    password: "testpass123"
+                })
+            }
+        });
+        
+        if (loginResponse.code === 200) {
+            const token = loginResponse.json().access;
+            
+            // 3. Crear perfil
+            const createProfileResponse = await pm.sendRequest({
+                url: pm.environment.get("api_url") + "/profiles/",
+                method: 'POST',
+                header: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: {
+                    mode: 'raw',
+                    raw: JSON.stringify({
+                        first_name: "Test",
+                        paternal_lastname: "User",
+                        gender: "M",
+                        bio: "Test profile"
+                    })
+                }
+            });
+            
+            console.log("Profile created:", createProfileResponse.json());
+        }
+    }
+};
+
+testFlow();
+```
+
+===============================================================================
+                             11. CONCLUSIÓN
+===============================================================================
+
+Esta guía proporciona toda la información necesaria para probar la API de
+02_users_profiles usando Postman.
+
+PUNTOS CLAVE:
+
+1. Configurar variables de entorno para facilitar el testing
+2. Usar pre-request scripts para autenticación automática
+3. Implementar test scripts para validaciones
+4. Documentar todos los endpoints
+5. Crear casos de prueba completos
+6. Mantener la colección actualizada
+
+RECOMENDACIONES FINALES:
+
+1. Crear una colección organizada por funcionalidades
+2. Usar variables de entorno para diferentes ambientes
+3. Implementar automatización de pruebas
+4. Documentar casos edge y errores
+5. Mantener ejemplos actualizados
+
+Para más información:
+- Documentación de Postman: https://learning.postman.com/
+- Documentación de Django REST Framework: https://www.django-rest-framework.org/
+- README.md del proyecto
+
+===============================================================================
+                                FIN
+===============================================================================
