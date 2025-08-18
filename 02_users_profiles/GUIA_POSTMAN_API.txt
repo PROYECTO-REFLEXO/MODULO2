@@ -1,0 +1,321 @@
+GUÍA PARA PROBAR LA API CON POSTMAN
+====================================
+
+CONFIGURACIÓN INICIAL
+=====================
+
+1. DESCARGAR E INSTALAR POSTMAN:
+   - Ve a: https://www.postman.com/downloads/
+   - Descarga la versión para Windows
+   - Instala y crea una cuenta gratuita
+
+2. INICIAR EL SERVIDOR DJANGO:
+   ```bash
+   python manage.py runserver
+   ```
+   - El servidor estará disponible en: http://127.0.0.1:8000/
+   - Verás: "Starting development server at http://127.0.0.1:8000/"
+
+3. CREAR UN SUPERUSUARIO (opcional, para acceder al admin):
+   ```bash
+   python manage.py createsuperuser
+   ```
+   - Sigue las instrucciones para crear usuario y contraseña
+
+CONFIGURACIÓN DE POSTMAN
+========================
+
+1. CREAR UNA NUEVA COLECCIÓN:
+   - Click en "Collections" → "New Collection"
+   - Nombre: "Users Profiles API"
+   - Descripción: "API para gestión de perfiles de usuario"
+
+2. CONFIGURAR VARIABLES DE ENTORNO:
+   - Click en "Environments" → "New Environment"
+   - Nombre: "Local Development"
+   - Variables:
+     - BASE_URL: http://127.0.0.1:8000
+     - TOKEN: (se llenará automáticamente después del login)
+
+ENDPOINTS DISPONIBLES PARA PROBAR
+=================================
+
+1. ADMINISTRACIÓN DJANGO:
+   - URL: {{BASE_URL}}/admin/
+   - Método: GET
+   - Descripción: Panel de administración de Django
+   - Notas: Requiere superusuario
+
+2. ENDPOINTS DE USUARIO:
+   - URL: {{BASE_URL}}/user/
+   - Método: GET
+   - Descripción: Obtener detalles del usuario actual
+   - Autenticación: Requerida
+
+   - URL: {{BASE_URL}}/user/update/
+   - Método: PUT/PATCH
+   - Descripción: Actualizar información del usuario
+   - Autenticación: Requerida
+
+   - URL: {{BASE_URL}}/user/photo/
+   - Método: POST
+   - Descripción: Subir foto de perfil
+   - Autenticación: Requerida
+
+3. ENDPOINTS DE PERFIL:
+   - URL: {{BASE_URL}}/profile/
+   - Método: GET
+   - Descripción: Obtener perfil del usuario
+   - Autenticación: Requerida
+
+   - URL: {{BASE_URL}}/profile/create/
+   - Método: POST
+   - Descripción: Crear nuevo perfil
+   - Autenticación: Requerida
+
+   - URL: {{BASE_URL}}/profile/update/
+   - Método: PUT/PATCH
+   - Descripción: Actualizar perfil
+   - Autenticación: Requerida
+
+4. ENDPOINTS DE CONTRASEÑA:
+   - URL: {{BASE_URL}}/password/change/
+   - Método: POST
+   - Descripción: Cambiar contraseña
+   - Autenticación: Requerida
+
+   - URL: {{BASE_URL}}/password/reset/
+   - Método: POST
+   - Descripción: Solicitar reset de contraseña
+   - Autenticación: No requerida
+
+5. ENDPOINTS DE VERIFICACIÓN:
+   - URL: {{BASE_URL}}/verification/code/
+   - Método: POST
+   - Descripción: Enviar código de verificación
+   - Autenticación: Requerida
+
+   - URL: {{BASE_URL}}/verification/email/
+   - Método: POST
+   - Descripción: Verificar email
+   - Autenticación: Requerida
+
+EJEMPLOS DE REQUESTS
+====================
+
+1. CREAR USUARIO (POST):
+   ```
+   URL: {{BASE_URL}}/user/
+   Método: POST
+   Headers:
+     Content-Type: application/json
+   
+   Body (raw JSON):
+   {
+     "username": "usuario_prueba",
+     "email": "usuario@ejemplo.com",
+     "password": "password123",
+     "first_name": "Usuario",
+     "last_name": "Prueba"
+   }
+   ```
+
+2. LOGIN (POST):
+   ```
+   URL: {{BASE_URL}}/auth/login/
+   Método: POST
+   Headers:
+     Content-Type: application/json
+   
+   Body (raw JSON):
+   {
+     "username": "usuario_prueba",
+     "password": "password123"
+   }
+   ```
+
+3. OBTENER PERFIL (GET):
+   ```
+   URL: {{BASE_URL}}/profile/
+   Método: GET
+   Headers:
+     Authorization: Token {{TOKEN}}
+     Content-Type: application/json
+   ```
+
+4. ACTUALIZAR PERFIL (PUT):
+   ```
+   URL: {{BASE_URL}}/profile/update/
+   Método: PUT
+   Headers:
+     Authorization: Token {{TOKEN}}
+     Content-Type: application/json
+   
+   Body (raw JSON):
+   {
+     "first_name": "Usuario Actualizado",
+     "bio": "Esta es mi nueva biografía",
+     "country": "España",
+     "city": "Madrid"
+   }
+   ```
+
+5. SUBIR FOTO DE PERFIL (POST):
+   ```
+   URL: {{BASE_URL}}/user/photo/
+   Método: POST
+   Headers:
+     Authorization: Token {{TOKEN}}
+   
+   Body (form-data):
+     profile_photo: [Seleccionar archivo]
+   ```
+
+CONFIGURACIÓN DE AUTENTICACIÓN
+==============================
+
+1. AUTENTICACIÓN POR TOKEN:
+   - Después del login, copia el token del response
+   - En Headers, agrega: Authorization: Token <tu_token>
+   - O usa la variable {{TOKEN}} si configuraste el entorno
+
+2. AUTENTICACIÓN POR SESIÓN:
+   - Usa cookies de sesión
+   - Postman las maneja automáticamente
+   - Útil para testing local
+
+MANEJO DE RESPUESTAS
+====================
+
+1. CÓDIGOS DE ESTADO ESPERADOS:
+   - 200: OK - Request exitoso
+   - 201: Created - Recurso creado
+   - 400: Bad Request - Error en los datos enviados
+   - 401: Unauthorized - No autenticado
+   - 403: Forbidden - No autorizado
+   - 404: Not Found - Recurso no encontrado
+   - 500: Internal Server Error - Error del servidor
+
+2. FORMATO DE RESPUESTA:
+   ```json
+   {
+     "status": "success",
+     "data": {
+       "id": 1,
+       "username": "usuario_prueba",
+       "email": "usuario@ejemplo.com"
+     },
+     "message": "Usuario creado exitosamente"
+   }
+   ```
+
+3. MANEJO DE ERRORES:
+   ```json
+   {
+     "status": "error",
+     "errors": {
+       "username": ["Este nombre de usuario ya existe"],
+       "email": ["Este email ya está registrado"]
+     },
+     "message": "Error de validación"
+   }
+   ```
+
+CONFIGURACIÓN DE TESTS EN POSTMAN
+=================================
+
+1. TESTS AUTOMÁTICOS:
+   ```javascript
+   // Verificar que la respuesta sea exitosa
+   pm.test("Status code is 200", function () {
+       pm.response.to.have.status(200);
+   });
+
+   // Verificar que el response contenga datos
+   pm.test("Response has data", function () {
+       var jsonData = pm.response.json();
+       pm.expect(jsonData).to.have.property('data');
+   });
+
+   // Guardar token automáticamente
+   if (pm.response.code === 200) {
+       var jsonData = pm.response.json();
+       if (jsonData.token) {
+           pm.environment.set("TOKEN", jsonData.token);
+       }
+   }
+   ```
+
+2. PRE-REQUEST SCRIPTS:
+   ```javascript
+   // Agregar timestamp a cada request
+   pm.environment.set("timestamp", new Date().toISOString());
+   ```
+
+FLUJO DE TESTING RECOMENDADO
+============================
+
+1. PRIMERA FASE - ENDPOINTS PÚBLICOS:
+   - Probar endpoints que no requieren autenticación
+   - Verificar respuestas de error para datos inválidos
+
+2. SEGUNDA FASE - REGISTRO Y LOGIN:
+   - Crear usuario de prueba
+   - Hacer login y obtener token
+   - Verificar que el token se guarde en variables
+
+3. TERCERA FASE - ENDPOINTS AUTENTICADOS:
+   - Probar todos los endpoints que requieren autenticación
+   - Verificar permisos y validaciones
+
+4. CUARTA FASE - CASOS DE ERROR:
+   - Probar con datos inválidos
+   - Verificar manejo de errores
+   - Probar límites y validaciones
+
+TIPS Y TRUCOS
+==============
+
+1. ORGANIZACIÓN:
+   - Agrupa requests por funcionalidad
+   - Usa nombres descriptivos para cada request
+   - Documenta cada endpoint con descripciones
+
+2. VARIABLES:
+   - Usa variables de entorno para URLs y tokens
+   - Crea variables para datos de prueba reutilizables
+   - Usa variables para IDs generados dinámicamente
+
+3. COLLECTIONS:
+   - Exporta tu colección para compartir con el equipo
+   - Usa versiones para mantener historial de cambios
+   - Documenta dependencias entre requests
+
+4. MONITORING:
+   - Usa Postman Monitors para tests automáticos
+   - Configura alertas para fallos
+   - Mantén métricas de performance
+
+SOLUCIÓN DE PROBLEMAS COMUNES
+==============================
+
+1. ERROR 500:
+   - Verifica que el servidor Django esté corriendo
+   - Revisa los logs del servidor
+   - Verifica la configuración de la base de datos
+
+2. ERROR 401/403:
+   - Verifica que el token sea válido
+   - Asegúrate de que el usuario tenga permisos
+   - Verifica que la autenticación esté configurada
+
+3. ERROR 400:
+   - Verifica el formato de los datos enviados
+   - Revisa las validaciones del modelo
+   - Verifica que todos los campos requeridos estén presentes
+
+4. PROBLEMAS DE CORS:
+   - Verifica la configuración de CORS en Django
+   - Asegúrate de que Postman esté enviando headers correctos
+
+Esta guía te permitirá probar completamente tu API con Postman de manera profesional y organizada.

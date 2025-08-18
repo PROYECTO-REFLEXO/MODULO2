@@ -1,0 +1,128 @@
+ESTRUCTURA DE ARCHIVOS DE DJANGO - EXPLICACIÓN
+================================================
+
+ARCHIVOS QUE DEBEN PERMANECER EN EL DIRECTORIO RAÍZ
+===================================================
+
+1. manage.py
+   - Es el punto de entrada principal de Django
+   - Django busca este archivo en el directorio raíz por defecto
+   - Contiene la función main() que ejecuta los comandos de Django
+   - NO puede moverse a una subcarpeta
+
+2. settings.py / django_settings.py
+   - Contiene la configuración principal de Django
+   - Django busca este archivo según DJANGO_SETTINGS_MODULE
+   - Si se mueve, hay que actualizar todas las referencias
+   - Puede causar errores de importación si se cambia de ubicación
+
+3. wsgi.py
+   - Archivo WSGI para despliegue en producción
+   - Los servidores web (Apache, Nginx) buscan este archivo en la raíz
+   - Contiene la configuración del servidor web
+   - NO puede moverse sin reconfigurar el servidor
+
+4. urls.py
+   - Archivo principal de URLs del proyecto
+   - Django lo busca según ROOT_URLCONF en settings
+   - Si se mueve, hay que actualizar la configuración
+   - Es el punto de entrada para el enrutamiento web
+
+5. __init__.py
+   - Hace que el directorio sea reconocido como un paquete Python
+   - Django necesita este archivo para importar módulos
+   - Si se mueve, puede romper las importaciones
+   - Debe estar en el directorio raíz para que funcione como paquete principal
+
+6. apps.py
+   - Configuración de la aplicación Django
+   - Django lo busca automáticamente
+   - Si se mueve, puede causar errores de "App not found"
+
+7. admin.py
+   - Configuración del panel de administración
+   - Django lo busca automáticamente en la aplicación
+   - Si se mueve, el admin puede dejar de funcionar
+
+ARCHIVOS QUE PODRÍAN MOVERSE A CARPETAS PARA MAYOR ORGANIZACIÓN
+===============================================================
+
+1. models.py
+   - Podría moverse a una carpeta models/ (ya tienes models/)
+   - Django puede encontrar modelos en subcarpetas
+   - Solo hay que asegurar que estén en INSTALLED_APPS
+
+2. serializers/ (ya está en carpeta)
+   - Perfecto para mantener en carpeta separada
+   - Django REST Framework los encuentra automáticamente
+   - No afecta la funcionalidad principal
+
+3. views/ (ya está en carpeta)
+   - Excelente para mantener en carpeta separada
+   - Django los encuentra según las importaciones en urls.py
+   - Mejora la organización del código
+
+4. services/ (ya está en carpeta)
+   - Ideal para mantener en carpeta separada
+   - No afecta la funcionalidad de Django
+   - Mejora la separación de responsabilidades
+
+5. tests/ (ya está en carpeta)
+   - Perfecto para mantener en carpeta separada
+   - Pytest puede configurarse para buscar en subcarpetas
+   - No afecta la funcionalidad principal
+
+6. Archivos de configuración adicionales:
+   - test_settings.py
+   - test_settings_simple.py
+   - settings_module.py
+   - Estos pueden moverse a una carpeta config/ o settings/
+
+¿POR QUÉ NO SE PUEDEN MOVER LOS ARCHIVOS PRINCIPALES?
+======================================================
+
+1. CONVENCIONES DE DJANGO:
+   - Django tiene convenciones específicas sobre dónde buscar archivos
+   - Cambiar estas ubicaciones rompe la funcionalidad automática
+   - Requiere reconfiguración manual que puede ser propensa a errores
+
+2. IMPORTS AUTOMÁTICOS:
+   - Django hace imports automáticos de ciertos archivos
+   - Si se mueven, estos imports fallan
+   - Puede causar errores de "Module not found"
+
+3. CONFIGURACIÓN DEL SERVIDOR:
+   - Los servidores web buscan archivos en ubicaciones específicas
+   - Cambiar estas ubicaciones requiere reconfigurar el servidor
+   - Puede causar errores 500 o de despliegue
+
+4. COMANDOS DE DJANGO:
+   - Comandos como 'python manage.py runserver' buscan archivos en la raíz
+   - Si se mueven, estos comandos fallan
+   - Requiere especificar rutas personalizadas
+
+RECOMENDACIÓN DE ORGANIZACIÓN
+============================
+
+ESTRUCTURA ACTUAL RECOMENDADA:
+```
+02_users_profiles/
+├── manage.py              ← DEBE permanecer aquí
+├── settings.py            ← DEBE permanecer aquí
+├── wsgi.py               ← DEBE permanecer aquí
+├── urls.py               ← DEBE permanecer aquí
+├── __init__.py           ← DEBE permanecer aquí
+├── apps.py               ← DEBE permanecer aquí
+├── admin.py              ← DEBE permanecer aquí
+├── models/               ← Ya organizado
+├── views/                ← Ya organizado
+├── serializers/          ← Ya organizado
+├── services/             ← Ya organizado
+├── tests/                ← Ya organizado
+└── config/               ← NUEVA CARPETA SUGERIDA
+    ├── test_settings.py
+    ├── test_settings_simple.py
+    └── settings_module.py
+```
+
+Esta estructura mantiene la funcionalidad de Django mientras maximiza la organización del código.
