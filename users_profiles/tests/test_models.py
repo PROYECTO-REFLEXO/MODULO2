@@ -47,7 +47,7 @@ class TestUserModel(TestCase):
             email='noname@example.com',
             password='testpass123'
         )
-        self.assertEqual(user_no_name.get_full_name(), '')  # Django devuelve cadena vacía
+        self.assertEqual(user_no_name.get_full_name(), 'noname')  # Retorna username cuando no hay nombre
     
     def test_phone_number_validation(self):
         """Test de validación de número de teléfono"""

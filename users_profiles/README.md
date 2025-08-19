@@ -13,6 +13,8 @@ Este módulo proporciona una gestión completa de perfiles de usuario, incluyend
 ## Estructura del Módulo
 
 ```
+config/
+manage.py
 02_users_profiles/
 ├── __init__.py
 ├── apps.py
@@ -207,88 +209,46 @@ Las configuraciones del módulo se pueden modificar en `settings.py` del proyect
 
 ## Tests
 
-El módulo incluye una suite completa de tests usando pytest que cubre todos los componentes:
+El módulo incluye una suite de tests con pytest ya configurada para ejecutarse dentro de `02_users_profiles/` usando `pytest.ini` y settings de prueba internos.
 
-### Ejecutar Tests
+### Ejecutar tests (recomendado)
 
-#### 1. Instalar dependencias de testing
+1) Instalar dependencias
 ```bash
 pip install -r requirements.txt
 ```
 
-#### 2. Ejecutar todos los tests
+2) Ejecutar tests del módulo
+
+PowerShell (Windows):
 ```bash
-python run_tests.py
+cd .\02_users_profiles
+cle
 ```
 
-#### 3. Ejecutar tests específicos
+Bash (Linux/Mac):
 ```bash
-# Solo tests de modelos
-python run_tests.py --type models
-
-# Solo tests de servicios
-python run_tests.py --type services
-
-# Solo tests de serializers
-python run_tests.py --type serializers
-
-# Solo tests de vistas
-python run_tests.py --type views
-
-# Solo tests de integración
-python run_tests.py --type integration
+cd 02_users_profiles
+pytest -c pytest.ini -q
 ```
 
-#### 4. Opciones adicionales
+3) Opcional: ejecutar un archivo o selección
 ```bash
-# Modo verbose
-python run_tests.py --verbose
+# Un archivo específico
+pytest -c pytest.ini tests/test_models.py -q
 
-# Con coverage
-python run_tests.py --coverage
-
-# Con reporte HTML de coverage
-python run_tests.py --coverage --html
-
-# Tests en paralelo
-python run_tests.py --parallel
+# Usando -k para filtrar
+pytest -c pytest.ini -k models -q
 ```
 
-#### 5. Con pytest directamente
+4) Opcional: cobertura rápida en consola
 ```bash
-# Todos los tests
-pytest tests/
-
-# Con coverage
-pytest --cov=. tests/
-
-# Con reporte HTML
-pytest --cov=. --cov-report=html tests/
+pytest -c pytest.ini --cov=. --cov-report=term-missing -q
 ```
 
-### Cobertura de Tests
-
-Los tests cubren el 100% de:
-- ✅ **Modelos**: User, UserProfile, UserVerificationCode
-- ✅ **Servicios**: UserService y lógica de negocio
-- ✅ **Serializers**: Todos los serializers de la API
-- ✅ **Vistas**: Todos los endpoints de la API
-- ✅ **Integración**: Flujos completos de usuario
-
-### Estructura de Tests
-
-```
-tests/
-├── conftest.py              # Fixtures y configuración
-├── test_models.py           # Tests de modelos
-├── test_services.py         # Tests de servicios
-├── test_serializers.py      # Tests de serializers
-├── test_views.py            # Tests de vistas
-├── test_integration.py      # Tests de integración
-└── README.md               # Documentación de tests
-```
-
-Para más detalles sobre los tests, consulta [tests/README.md](tests/README.md).
+Notas:
+- Los tests usan un `AUTH_USER_MODEL` por defecto (de Django) para simplificar la ejecución.
+- No es necesario registrar la app en `INSTALLED_APPS` para correr estos tests.
 
 ## Contribución
 

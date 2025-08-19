@@ -1,0 +1,14 @@
+# Dependencias del módulo 02_users_profiles
+Django>=4.2.0
+djangorestframework>=3.14.0
+Pillow>=10.0.0  # Para manejo de imágenes
+python-decouple>=3.8  # Para configuración
+
+# Dependencias para testing
+pytest>=7.4.0
+pytest-django>=4.5.0
+pytest-cov>=4.1.0
+pytest-xdist>=3.3.0  # Para tests en paralelo
+coverage>=7.2.0
+factory-boy>=3.3.0  # Para crear datos de prueba
+faker>=19.0.0  # Para generar datos falsos
