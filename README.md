@@ -95,7 +95,6 @@ El objetivo final es **hacer que `pytest` pase sin errores** en el subdirectorio
 ---
 
 ## Qué hay que implementar (lista estricta por archivo)
-> **Nota:** muchos archivos contienen `...`, comentarios o errores intencionales. Implementa exactamente lo que se espera según la estructura y las pruebas. Resuelve también errores de sintaxis (por ejemplo `Fals` → `False`) y elimina `...` o placeholders.
 
 ### 1. `users_profiles/models/`
 - `user.py`
@@ -209,9 +208,4 @@ curl -X PATCH -H "Authorization: Token <TOKEN>" -F "profile_photo=@/ruta/a/foto.
 
 ---
 
-## Ayuda adicional
-Si quieres, puedo:
-- Generar implementaciones puntuales para pasar tests concretos.
-- Reparar un archivo a la vez (p. ej. `serializers/user.py` completo y corregido).
-- Crear PRs con cambios mínimos que hagan pasar tests específicos.
 
