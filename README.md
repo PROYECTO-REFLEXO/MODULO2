@@ -1,7 +1,6 @@
 
 # MÓDULO 02 - users_profiles — Instrucciones estrictas para completar y probar
 
-> **Objetivo**: Implementar estrictamente el módulo `users_profiles` conforme a la estructura y a las pruebas incluidas. El repositorio contiene la base del proyecto Django pero muchos archivos están incompletos o contienen marcadores/errores. Este README explica **qué** hay que implementar, **dónde** y **cómo** comprobar que está hecho correctamente.
 
 ---
 
